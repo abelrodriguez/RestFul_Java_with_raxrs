@@ -5,11 +5,12 @@
  */
 package app;
 
-import DTO.ICustomerResource;
-import Services.CustomerResourceService;
+
+import Services.CustomerResource;
 import java.util.HashSet;
 import java.util.Set;
 import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Application;
 
 /**
  *
@@ -22,11 +23,12 @@ public class ShoppingApplication extends Application {
     private Set<Class<?>> empty = new HashSet<Class<?>>();
     
     public ShoppingApplication() {
-        singletons.add(new CustomerResourceService());
+        singletons.add(new CustomerResource());
     }
     
     @Override
     public Set<Class<?>> getClasses() {
+        empty.add(CustomerResource.class);
         return empty;
     }
 

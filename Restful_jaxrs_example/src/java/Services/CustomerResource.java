@@ -15,6 +15,13 @@ import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Path;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
@@ -22,13 +29,15 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
  *
  * @author Abel Rodríguez
  */
-public class CustomerResourceService implements ICustomerResource {
+
+public class CustomerResource implements ICustomerResource{
     private Map<Integer , Customer> customerDB = new ConcurrentHashMap<Integer, Customer>();
     private AtomicInteger idCounter = new AtomicInteger();
     
@@ -40,7 +49,7 @@ public class CustomerResourceService implements ICustomerResource {
         System.out.println("Created customer " + customer.getId());
         return javax.ws.rs.core.Response.created(URI.create("/customers/" + customer.getId())).build();
     }
-
+    
     @Override
     public StreamingOutput getCostumer(int id) {
         final Customer customer = customerDB.get(id);
@@ -59,6 +68,7 @@ public class CustomerResourceService implements ICustomerResource {
         };
     }
 
+    
     @Override
     public void updateCustomer(int id, InputStream is) {
         Customer update = readCustomer(is);
@@ -75,6 +85,7 @@ public class CustomerResourceService implements ICustomerResource {
         current.setCountry(update.getCountry());
     }
     
+    
     protected Customer readCustomer(InputStream is) {
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -88,35 +99,42 @@ public class CustomerResourceService implements ICustomerResource {
             }
             NodeList nodes = root.getChildNodes();
             for (int i=0; i < nodes.getLength(); i++) {
-                Element element = (Element) nodes.item(i);
+                //Element element = (Element) nodes.item(i);
+                Node node = nodes.item(i);
                 
-                switch(element.getTagName()){
-                    case "first-name":
-                        cust.setFirstName(element.getTextContent());
-                        break;
-                    case "last-name":
-                        cust.setLastName(element.getTextContent());
-                        break;
-                    case "street":
-                        cust.setStreet(element.getTextContent());
-                        break;
-                    case "city":
-                        cust.setCity(element.getTextContent());
-                        break;
-                    case "state":
-                        cust.setState(element.getTextContent());
-                        break;
-                    case "zip":
-                        cust.setZip(element.getTextContent());
-                        break;
-                    case "country":
-                        cust.setCountry(element.getTextContent());
-                        break;
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) node;
+                
+                    switch(element.getTagName()){
+                        case "first-name":
+                            cust.setFirstName(element.getTextContent());
+                            break;
+                        case "last-name":
+                            cust.setLastName(element.getTextContent());
+                            break;
+                        case "street":
+                            cust.setStreet(element.getTextContent());
+                            break;
+                        case "city":
+                            cust.setCity(element.getTextContent());
+                            break;
+                        case "state":
+                            cust.setState(element.getTextContent());
+                            break;
+                        case "zip":
+                            cust.setZip(element.getTextContent());
+                            break;
+                        case "country":
+                            cust.setCountry(element.getTextContent());
+                            break;
+                    }
                 }
             }
             return cust;
             
         } catch (Exception e) {
+            System.out.println("EXCEPCION");
+            System.out.println(e.getMessage());
             throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
         }
     }
