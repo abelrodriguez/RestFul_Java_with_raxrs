@@ -15,13 +15,6 @@ import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Path;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
@@ -41,6 +34,7 @@ public class CustomerResource implements ICustomerResource{
     private Map<Integer , Customer> customerDB = new ConcurrentHashMap<Integer, Customer>();
     private AtomicInteger idCounter = new AtomicInteger();
     
+    // POST http://localhost:8080/Restful_jaxrs_example/services/customers
     @Override
     public Response createConsumer(InputStream is) {
         Customer customer = readCustomer(is);
@@ -50,6 +44,7 @@ public class CustomerResource implements ICustomerResource{
         return javax.ws.rs.core.Response.created(URI.create("/customers/" + customer.getId())).build();
     }
     
+    // GET http://localhost:8080/Restful_jaxrs_example/services/customers/1
     @Override
     public StreamingOutput getCostumer(int id) {
         final Customer customer = customerDB.get(id);
@@ -68,7 +63,7 @@ public class CustomerResource implements ICustomerResource{
         };
     }
 
-    
+    // PUT http://localhost:8080/Restful_jaxrs_example/services/customers/1
     @Override
     public void updateCustomer(int id, InputStream is) {
         Customer update = readCustomer(is);
