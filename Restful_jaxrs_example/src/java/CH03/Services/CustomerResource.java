@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Services;
+package CH03.Services;
 
-import DTO.Customer;
-import DTO.ICustomerResource;
+import CH03.DTO.Customer;
+import CH04.webdav.LOCK;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,6 +15,8 @@ import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
@@ -33,6 +35,13 @@ import org.w3c.dom.NodeList;
 public class CustomerResource implements ICustomerResource{
     private Map<Integer , Customer> customerDB = new ConcurrentHashMap<Integer, Customer>();
     private AtomicInteger idCounter = new AtomicInteger();
+    
+    public CustomerResource() {
+        
+    }
+    public CustomerResource (Map<Integer, Customer> customerDB) {
+        this.customerDB = customerDB;
+    }
     
     // POST http://localhost:8080/Restful_jaxrs_example/services/customers
     @Override
@@ -78,6 +87,19 @@ public class CustomerResource implements ICustomerResource{
         current.setState(update.getState());
         current.setZip(update.getZip());
         current.setCountry(update.getCountry());
+    }
+    
+    
+    @Path("{id}")
+    @LOCK
+    public void lockIt(@PathParam("id") int id) {
+        Customer current = customerDB.get(id);
+        
+        if (current == null) {
+            throw new WebApplicationException(javax.ws.rs.core.Response.Status.NOT_FOUND);
+        }
+        
+        current.setLocked(true);
     }
     
     
@@ -137,15 +159,20 @@ public class CustomerResource implements ICustomerResource{
     protected void outputCustomer(OutputStream os, Customer cust) throws IOException {
         PrintStream writer = new PrintStream(os);
         
-        writer.println("<customer id=\"" + cust.getId() + "\">");
-        writer.println("    <first-name>" + cust.getFirstName()+ "</first-name>");
-        writer.println("    <last-name>" + cust.getLastName()+ "</last-name>");
-        writer.println("    <street>" + cust.getStreet()+ "</street>");
-        writer.println("    <city>" + cust.getCity()+ "</city>");
-        writer.println("    <state>" + cust.getState()+ "</state>");
-        writer.println("    <zip>" + cust.getZip()+ "</zip>");
-        writer.println("    <country>" + cust.getCountry()+ "</country>");
-        writer.println("</customer>");
-    
+        if (cust.isLocked()) {
+            writer.println("<customer id=\"" + cust.getId() + "\">");
+            writer.println("    <locked>true</locked>");
+            writer.println("</customer>");
+        } else {
+            writer.println("<customer id=\"" + cust.getId() + "\">");
+            writer.println("    <first-name>" + cust.getFirstName()+ "</first-name>");
+            writer.println("    <last-name>" + cust.getLastName()+ "</last-name>");
+            writer.println("    <street>" + cust.getStreet()+ "</street>");
+            writer.println("    <city>" + cust.getCity()+ "</city>");
+            writer.println("    <state>" + cust.getState()+ "</state>");
+            writer.println("    <zip>" + cust.getZip()+ "</zip>");
+            writer.println("    <country>" + cust.getCountry()+ "</country>");
+            writer.println("</customer>");
+        }
     }
 }

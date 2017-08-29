@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package DTO;
+package CH03.Services;
 
 import java.io.InputStream;
 import javax.ws.rs.Consumes;

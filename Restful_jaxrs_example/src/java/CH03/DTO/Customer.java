@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package DTO;
+package CH03.DTO;
 
 /**
  *
@@ -11,6 +11,7 @@ package DTO;
  */
 public class Customer {
     private int id;
+    private boolean locked = false;
     private String firstName;
     private String lastName;
     private String street;
@@ -82,6 +83,15 @@ public class Customer {
     public void setCountry(String country) {
         this.country = country;
     }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
+    
     
     
             
