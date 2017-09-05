@@ -6,13 +6,10 @@
 package app;
 
 
-import CH03.Services.CustomerResource;
-import CH04.webdav.CustomerDatabaseResource;
-import CH04.webdav.CustomerResourceTemplates;
-import CH04.webdav.FirstLastCustomerResource;
-import CH04.webdav.OrderResource;
-import CH04.webdav.Resource1;
-import CH04.webdav.Resource2;
+import CH03.Services.*;
+import CH04.webdav.*;
+import CH05.*;
+import CH05.conversion.ColorConverterProvider;
 import java.util.HashSet;
 import java.util.Set;
 import javax.ws.rs.ApplicationPath;
@@ -31,6 +28,7 @@ public class ShoppingApplication extends Application {
     public ShoppingApplication() {
         singletons.add(new CustomerResource());
         singletons.add(new FirstLastCustomerResource());
+        singletons.add(new DefaultValueImpl());
     }
     
     @Override
@@ -42,6 +40,16 @@ public class ShoppingApplication extends Application {
         empty.add(FirstLastCustomerResource.class);
         empty.add(Resource1.class);
         empty.add(Resource2.class);
+        empty.add(PathParamImpl.class);
+        empty.add(PathSegmentImpl.class);
+        empty.add(MatrixParamImpl.class);
+        empty.add(QueryParamImpl.class);
+        empty.add(FormParamImpl.class);
+        empty.add(HeaderParamImpl.class);
+        empty.add(CookieParamImpl.class);
+        empty.add(BeanParamImpl.class);
+        empty.add(ColorConverterProvider.class);
+        empty.add(EncodedImpl.class);
         return empty;
     }
 
